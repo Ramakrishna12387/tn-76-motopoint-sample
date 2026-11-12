@@ -3,154 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TN76 Motopoint | Premium Bike Accessories</title>
+    <title>TN76 Motopoint | Surandai</title>
     
-    <!-- Tailwind CSS (Design) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Real 3D Viewer Script -->
+    <!-- Spline 3D -->
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.51/build/spline-viewer.js"></script>
-    
-    <!-- Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
         tailwind.config = {
             theme: {
-                extend: {
-                    colors: { brand: '#ff5500', dark: '#09090b', card: '#18181b' }
-                }
+                extend: { colors: { brand: '#ff5500', dark: '#09090b', glass: 'rgba(24, 24, 27, 0.7)' } }
             }
         }
     </script>
 
     <style>
-        body { background-color: #09090b; color: #ffffff; font-family: 'Segoe UI', system-ui, sans-serif; }
-        /* Glassmorphism Effect */
+        body { background-color: #09090b; color: #ffffff; font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
+        
         .glass-panel {
             background: rgba(24, 24, 27, 0.6);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
+        
         .text-gradient {
             background: linear-gradient(90deg, #ff5500, #ffaa00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Smooth Animations */
-        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        
-        .view-section { display: none; }
+
+        .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
         .active-view { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff5500; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Premium Navbar -->
-    <nav class="fixed w-full z-50 glass-panel border-b border-white/10 transition-all">
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-panel border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-4 cursor-pointer" onclick="switchTab('home-view')">
-                    <!-- Insta Logo -->
-                    <img src="https://ui-avatars.com/api/?name=TN76&background=ff5500&color=fff&rounded=true" alt="Logo" class="w-12 h-12 rounded-full border-2 border-brand shadow-[0_0_15px_rgba(255,85,0,0.5)]">
-                    <span class="text-2xl font-black tracking-widest uppercase">_TN76 <span class="text-brand">Motopoint</span></span>
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home-view')">
+                    <img src="https://ui-avatars.com/api/?name=TN76&background=ff5500&color=fff&rounded=true" alt="Logo" class="w-10 h-10 rounded-full border border-brand">
+                    <span class="text-xl md:text-2xl font-black tracking-wider uppercase">_TN76 <span class="text-brand">Motopoint</span></span>
                 </div>
-                <div class="flex gap-6">
-                    <button onclick="switchTab('home-view')" class="text-gray-300 hover:text-white font-semibold transition">Catalog</button>
-                    <button onclick="checkAdmin()" class="bg-brand hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold shadow-[0_0_10px_rgba(255,85,0,0.4)] transition">
-                        <i class="fas fa-user-shield mr-2"></i>Admin
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex gap-8 items-center">
+                    <button onclick="switchTab('home-view')" class="nav-link text-gray-300 hover:text-brand font-semibold transition">Home</button>
+                    <button onclick="switchTab('products-view')" class="nav-link text-gray-300 hover:text-brand font-semibold transition">Products</button>
+                    <button onclick="switchTab('about-view')" class="nav-link text-gray-300 hover:text-brand font-semibold transition">About</button>
+                    <button onclick="switchTab('contact-view')" class="nav-link text-gray-300 hover:text-brand font-semibold transition">Address</button>
+                    <button onclick="checkAdmin()" class="bg-brand hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold transition shadow-[0_0_10px_rgba(255,85,0,0.3)]">
+                        <i class="fas fa-lock mr-2"></i>Admin
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-gray-300 hover:text-white text-2xl focus:outline-none">
+                        <i class="fas fa-bars" id="menu-icon"></i>
                     </button>
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-white/10 absolute w-full">
+            <div class="px-4 pt-2 pb-6 space-y-2 flex flex-col">
+                <button onclick="switchTab('home-view')" class="text-left py-3 text-gray-300 hover:text-brand font-semibold border-b border-gray-800">Home</button>
+                <button onclick="switchTab('products-view')" class="text-left py-3 text-gray-300 hover:text-brand font-semibold border-b border-gray-800">Products</button>
+                <button onclick="switchTab('about-view')" class="text-left py-3 text-gray-300 hover:text-brand font-semibold border-b border-gray-800">About Us</button>
+                <button onclick="switchTab('contact-view')" class="text-left py-3 text-gray-300 hover:text-brand font-semibold border-b border-gray-800">Address & Contact</button>
+                <button onclick="checkAdmin()" class="text-left py-3 text-brand font-bold mt-2"><i class="fas fa-lock mr-2"></i>Admin Login</button>
+            </div>
+        </div>
     </nav>
 
-    <!-- Main Content Space -->
+    <!-- Main Content -->
     <main class="flex-grow pt-20">
         
-        <!-- ================= HOME VIEW ================= -->
+        <!-- 1. HOME VIEW -->
         <section id="home-view" class="view-section active-view">
-            
-            <!-- 3D Hero Section -->
-            <div class="relative h-[80vh] flex items-center justify-center overflow-hidden border-b border-white/5">
-                <!-- 3D Element Background -->
-                <div class="absolute inset-0 z-0 opacity-60 pointer-events-none md:pointer-events-auto">
-                    <!-- Default 3D abstract object. You can replace URL with your own Spline 3D Bike URL later -->
+            <div class="relative h-[85vh] flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 z-0 opacity-60">
                     <spline-viewer url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"></spline-viewer>
                 </div>
-                
-                <div class="relative z-10 text-center px-4 fade-in">
-                    <h1 class="text-5xl md:text-7xl font-black mb-4 tracking-tight">Welcome to <br><span class="text-gradient">_TN76 Motopoint</span></h1>
-                    <p class="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">Premium Modifications, Exhausts & Riding Gears in Surandai.</p>
-                    <a href="#products-section" class="inline-block bg-white text-black px-8 py-3 rounded-full font-bold hover:scale-105 transition transform">Explore Collection</a>
+                <div class="relative z-10 text-center px-4">
+                    <span class="bg-brand/20 text-brand px-4 py-1 rounded-full text-sm font-bold tracking-widest border border-brand/30 uppercase mb-4 inline-block">Surandai's Best</span>
+                    <h1 class="text-5xl md:text-7xl font-black mb-4 uppercase">Upgrade Your <br><span class="text-gradient">Machine</span></h1>
+                    <p class="text-lg text-gray-400 mb-8 max-w-xl mx-auto">High-performance exhausts, premium helmets, and custom modifications to make your bike stand out.</p>
+                    <button onclick="switchTab('products-view')" class="bg-white text-black px-8 py-3 rounded-full font-bold hover:scale-105 transition transform">View Catalog</button>
                 </div>
             </div>
-
-            <!-- Products Section -->
-            <div id="products-section" class="max-w-7xl mx-auto px-4 py-16">
-                <h2 class="text-3xl font-bold mb-10 flex items-center gap-3 fade-in">
-                    <span class="w-2 h-8 bg-brand rounded-full"></span> Featured Accessories
-                </h2>
-                
-                <div id="store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 fade-in" style="animation-delay: 0.2s;">
-                    <!-- Products will be injected here via JS -->
-                </div>
-            </div>
-
         </section>
 
-        <!-- ================= ADMIN LOGIN ================= -->
+        <!-- 2. PRODUCTS VIEW -->
+        <section id="products-view" class="view-section">
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-black mb-4">Our <span class="text-gradient">Products</span></h2>
+                    <p class="text-gray-400">Browse our latest collection of bike accessories.</p>
+                </div>
+                <div id="store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Products dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ABOUT VIEW -->
+        <section id="about-view" class="view-section">
+            <div class="max-w-4xl mx-auto px-4 py-16 text-center">
+                <h2 class="text-4xl font-black mb-8">About <span class="text-gradient">_TN76 Motopoint</span></h2>
+                <div class="glass-panel p-8 rounded-2xl text-left md:text-center text-gray-300 leading-relaxed space-y-6">
+                    <p class="text-lg">Welcome to <strong>TN76 Motopoint</strong>, the ultimate destination for bikers in and around Surandai. We breathe motorcycles and understand the passion of riding.</p>
+                    <p class="text-lg">Founded with the vision to provide premium quality bike modifications, touring accessories, safety gears, and aesthetic upgrades, we ensure your machine not only looks good but performs at its peak.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <i class="fas fa-helmet-safety text-3xl text-brand mb-4"></i>
+                            <h3 class="font-bold text-xl mb-2 text-white">Safety Gears</h3>
+                            <p class="text-sm">Branded helmets, riding jackets, and gloves.</p>
+                        </div>
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <i class="fas fa-motorcycle text-3xl text-brand mb-4"></i>
+                            <h3 class="font-bold text-xl mb-2 text-white">Modifications</h3>
+                            <p class="text-sm">Fog lights, visors, winglets, and exhaust systems.</p>
+                        </div>
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <i class="fas fa-wrench text-3xl text-brand mb-4"></i>
+                            <h3 class="font-bold text-xl mb-2 text-white">Quality Assured</h3>
+                            <p class="text-sm">Only the best and trusted brands for your bike.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CONTACT / ADDRESS VIEW -->
+        <section id="contact-view" class="view-section">
+            <div class="max-w-6xl mx-auto px-4 py-16">
+                <h2 class="text-4xl font-black mb-12 text-center">Visit <span class="text-gradient">Our Shop</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass-panel p-8 rounded-2xl flex flex-col justify-center">
+                        <div class="space-y-8">
+                            <div class="flex items-start gap-4">
+                                <div class="bg-brand/20 p-4 rounded-full text-brand"><i class="fas fa-map-marker-alt text-xl"></i></div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-white">Address</h4>
+                                    <p class="text-gray-400 mt-1">Main Road, Surandai,<br>Tenkasi District, Tamil Nadu 627859</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="bg-brand/20 p-4 rounded-full text-brand"><i class="fab fa-whatsapp text-xl"></i></div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-white">WhatsApp / Phone</h4>
+                                    <p class="text-gray-400 mt-1">+91 98765 43210</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="bg-brand/20 p-4 rounded-full text-brand"><i class="fab fa-instagram text-xl"></i></div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-white">Instagram</h4>
+                                    <a href="https://www.instagram.com/_tn76_motopoint_surandai/" target="_blank" class="text-brand hover:underline mt-1 block">@_tn76_motopoint_surandai</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-2 rounded-2xl h-[400px]">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3936.197992981997!2d77.3995!3d9.0068!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMDAnMjQuNSJOIDc3wrAyMyw1OC4yIkU!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin" 
+                            width="100%" height="100%" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. ADMIN LOGIN -->
         <section id="login-view" class="view-section">
-            <div class="min-h-[80vh] flex items-center justify-center px-4">
-                <div class="glass-panel p-8 rounded-2xl w-full max-w-md fade-in text-center">
-                    <i class="fas fa-lock text-4xl text-brand mb-4"></i>
+            <div class="min-h-[70vh] flex items-center justify-center px-4">
+                <div class="glass-panel p-8 rounded-2xl w-full max-w-md text-center">
+                    <i class="fas fa-user-shield text-4xl text-brand mb-4"></i>
                     <h2 class="text-2xl font-bold mb-6">Admin Secured Portal</h2>
-                    
-                    <input type="text" id="username" placeholder="Username" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white focus:outline-none focus:border-brand transition">
-                    
-                    <input type="password" id="password" placeholder="Password" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-6 text-white focus:outline-none focus:border-brand transition">
-                    
-                    <button onclick="login()" class="w-full bg-brand text-white font-bold py-3 rounded-lg hover:bg-orange-600 transition shadow-[0_0_15px_rgba(255,85,0,0.3)]">Login to Dashboard</button>
-                    
-                    <p id="error-msg" class="text-red-500 mt-4 hidden text-sm font-semibold">Incorrect credentials!</p>
+                    <input type="text" id="username" placeholder="Username" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white focus:border-brand outline-none">
+                    <input type="password" id="password" placeholder="Password" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-6 text-white focus:border-brand outline-none">
+                    <button onclick="login()" class="w-full bg-brand text-white font-bold py-3 rounded-lg hover:bg-orange-600 transition">Login Securely</button>
+                    <p id="error-msg" class="text-red-500 mt-4 hidden text-sm">Access Denied! Incorrect credentials.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ================= ADMIN DASHBOARD ================= -->
+        <!-- 6. ADMIN DASHBOARD -->
         <section id="dashboard-view" class="view-section">
             <div class="max-w-7xl mx-auto px-4 py-12">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-10 fade-in">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8">
                     <h2 class="text-3xl font-bold"><span class="text-brand">Admin</span> Dashboard</h2>
-                    <button onclick="logout()" class="text-gray-400 hover:text-white border border-gray-600 px-4 py-2 rounded-lg mt-4 md:mt-0"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                    <button onclick="logout()" class="text-gray-400 hover:text-white mt-4 md:mt-0"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Add Form -->
-                    <div class="glass-panel p-6 rounded-2xl h-fit fade-in" style="animation-delay: 0.1s;">
-                        <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Add New Item</h3>
-                        <input type="text" id="add-name" placeholder="Product Name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white">
-                        <input type="number" id="add-price" placeholder="Price (₹)" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white">
-                        <input type="text" id="add-img" placeholder="Image URL" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-6 text-white">
+                    <!-- Add Product Form (WITH DIRECT UPLOAD) -->
+                    <div class="glass-panel p-6 rounded-2xl h-fit">
+                        <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Add New Product</h3>
+                        <input type="text" id="add-name" placeholder="Product Name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white outline-none focus:border-brand">
+                        <input type="number" id="add-price" placeholder="Price (₹)" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white outline-none focus:border-brand">
+                        
+                        <!-- File Upload Button -->
+                        <div class="mb-6 relative">
+                            <input type="file" id="add-img-file" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                            <button type="button" onclick="document.getElementById('add-img-file').click()" class="w-full bg-black/50 border border-white/10 border-dashed rounded-lg px-4 py-6 text-gray-400 hover:text-white hover:border-brand transition flex flex-col items-center">
+                                <i class="fas fa-cloud-upload-alt text-2xl mb-2"></i>
+                                <span id="upload-text">Upload Product Photo from Device</span>
+                            </button>
+                            <!-- Image Preview -->
+                            <img id="img-preview" src="" class="hidden mt-4 w-full h-40 object-cover rounded-lg border border-white/10">
+                        </div>
+
                         <button onclick="addNewProduct()" class="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition">Publish Product</button>
                     </div>
 
-                    <!-- Manage Items -->
-                    <div class="lg:col-span-2 glass-panel p-6 rounded-2xl fade-in" style="animation-delay: 0.2s;">
+                    <!-- Inventory Table -->
+                    <div class="lg:col-span-2 glass-panel p-6 rounded-2xl overflow-hidden">
                         <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Live Inventory</h3>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="text-gray-400 text-sm uppercase bg-black/30">
                                     <tr>
-                                        <th class="p-4 rounded-tl-lg">Item Name</th>
+                                        <th class="p-4 rounded-tl-lg">Product</th>
                                         <th class="p-4">Price</th>
                                         <th class="p-4 text-right rounded-tr-lg">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="admin-table-body" class="divide-y divide-white/5">
-                                    <!-- Rows injected via JS -->
+                                    <!-- Rows JS -->
                                 </tbody>
                             </table>
                         </div>
@@ -160,29 +258,52 @@
         </section>
     </main>
 
+    <!-- Footer -->
+    <footer class="glass-panel mt-auto py-6 text-center text-gray-500 border-t border-white/10">
+        <p>&copy; 2026 TN76 Motopoint Surandai. All rights reserved.</p>
+    </footer>
+
     <script>
-        // --- 1. CONFIGURATION ---
+        // --- ADMIN CONFIG ---
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "admin123";
-        const WHATSAPP_NO = "919876543210"; // Client's WhatsApp Number
+        const WHATSAPP_NO = "919876543210"; 
 
-        // --- 2. LOCAL STORAGE SETUP ---
+        // --- DATABASE INIT ---
         let db = JSON.parse(localStorage.getItem('tn76_db')) || [
-            { id: 1, name: "Axor Street Helmet - Matte Black", price: 4999, img: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&q=80" },
-            { id: 2, name: "HJG Fog Lights (Pair)", price: 1500, img: "https://images.unsplash.com/photo-1557008075-7f2c5efa4cfd?w=500&q=80" }
+            { id: 1, name: "Axor Street Helmet", price: 4999, img: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&q=80" },
+            { id: 2, name: "HJG Fog Lights", price: 1500, img: "https://images.unsplash.com/photo-1557008075-7f2c5efa4cfd?w=500&q=80" }
         ];
 
-        // --- 3. NAVIGATION LOGIC ---
+        // --- MOBILE MENU LOGIC ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            menu.classList.toggle('hidden');
+            if(menu.classList.contains('hidden')) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        }
+
+        // --- TAB SWITCHING ---
         function switchTab(tabId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
             document.getElementById(tabId).classList.add('active-view');
             
-            if(tabId === 'home-view') loadStorefront();
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+            document.getElementById('menu-icon').classList.replace('fa-times', 'fa-bars');
+
+            if(tabId === 'products-view') loadStorefront();
             if(tabId === 'dashboard-view') loadAdminTable();
             window.scrollTo(0,0);
         }
 
-        // --- 4. AUTHENTICATION ---
+        // --- ADMIN AUTH ---
         function checkAdmin() {
             if(sessionStorage.getItem('tn76_auth') === 'true') switchTab('dashboard-view');
             else switchTab('login-view');
@@ -205,13 +326,13 @@
             switchTab('home-view');
         }
 
-        // --- 5. RENDER STOREFRONT (HOME) ---
+        // --- STOREFRONT RENDER ---
         function loadStorefront() {
             const grid = document.getElementById('store-grid');
             grid.innerHTML = '';
             
             if(db.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 italic col-span-full">No products available right now.</p>';
+                grid.innerHTML = '<p class="text-gray-500 italic col-span-full text-center">Inventory updating soon...</p>';
                 return;
             }
 
@@ -220,16 +341,15 @@
                 const waLink = `https://wa.me/${WHATSAPP_NO}?text=${msg}`;
                 
                 grid.innerHTML += `
-                    <div class="glass-panel rounded-xl overflow-hidden group hover:border-brand transition duration-300">
-                        <div class="h-56 overflow-hidden relative">
+                    <div class="glass-panel rounded-xl overflow-hidden group border border-white/5 hover:border-brand/50 transition duration-300 flex flex-col">
+                        <div class="h-48 overflow-hidden relative">
                             <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                         </div>
-                        <div class="p-5">
-                            <h3 class="text-lg font-bold mb-1 truncate">${item.name}</h3>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-lg font-bold mb-1 truncate text-white">${item.name}</h3>
                             <p class="text-brand font-black text-xl mb-4">₹${item.price}</p>
-                            <a href="${waLink}" target="_blank" class="block w-full text-center bg-white text-black font-bold py-2 rounded hover:bg-gray-200 transition">
-                                <i class="fab fa-whatsapp mr-2 text-green-500"></i> Order Now
+                            <a href="${waLink}" target="_blank" class="mt-auto block w-full text-center bg-white text-black font-bold py-2 rounded hover:bg-gray-200 transition">
+                                <i class="fab fa-whatsapp mr-2 text-green-600"></i> Buy Now
                             </a>
                         </div>
                     </div>
@@ -237,16 +357,37 @@
             });
         }
 
-        // --- 6. RENDER ADMIN TABLE ---
+        // --- ADMIN IMAGE UPLOAD LOGIC ---
+        let currentUploadedImageBase64 = "";
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Convert image to Base64 to save in localStorage (Demo purpose)
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentUploadedImageBase64 = e.target.result;
+                    document.getElementById('upload-text').innerText = file.name;
+                    document.getElementById('upload-text').classList.add('text-brand');
+                    
+                    // Show Preview
+                    const preview = document.getElementById('img-preview');
+                    preview.src = currentUploadedImageBase64;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function loadAdminTable() {
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
             db.forEach(item => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-white/5 transition">
+                    <tr class="hover:bg-white/5 transition border-b border-white/5">
                         <td class="p-4 flex items-center gap-3">
-                            <img src="${item.img}" class="w-10 h-10 rounded object-cover">
-                            <span class="font-medium">${item.name}</span>
+                            <img src="${item.img}" class="w-12 h-12 rounded object-cover border border-white/10">
+                            <span class="font-medium text-white truncate max-w-[150px] md:max-w-xs">${item.name}</span>
                         </td>
                         <td class="p-4 text-brand font-bold">₹${item.price}</td>
                         <td class="p-4 text-right">
@@ -259,34 +400,36 @@
             });
         }
 
-        // --- 7. ADD / DELETE PRODUCTS ---
         function addNewProduct() {
             const n = document.getElementById('add-name').value;
             const p = document.getElementById('add-price').value;
-            const i = document.getElementById('add-img').value || "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&q=80";
+            const i = currentUploadedImageBase64 || "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&q=80"; // Fallback image if no upload
 
-            if(!n || !p) return alert("Name and Price are required!");
+            if(!n || !p) return alert("Product Name and Price are required!");
 
             db.push({ id: Date.now(), name: n, price: p, img: i });
             localStorage.setItem('tn76_db', JSON.stringify(db));
             
+            // Reset Form
             document.getElementById('add-name').value = '';
             document.getElementById('add-price').value = '';
-            document.getElementById('add-img').value = '';
+            document.getElementById('add-img-file').value = '';
+            document.getElementById('upload-text').innerText = 'Upload Product Photo from Device';
+            document.getElementById('upload-text').classList.remove('text-brand');
+            document.getElementById('img-preview').classList.add('hidden');
+            currentUploadedImageBase64 = "";
             
             loadAdminTable();
+            alert("Product added successfully!");
         }
 
         function deleteItem(id) {
-            if(confirm("Delete this item?")) {
+            if(confirm("Are you sure you want to delete this product?")) {
                 db = db.filter(item => item.id !== id);
                 localStorage.setItem('tn76_db', JSON.stringify(db));
                 loadAdminTable();
             }
         }
-
-        // Initialize App
-        loadStorefront();
     </script>
 </body>
 </html>
