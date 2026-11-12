@@ -3,287 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>_TN76 Motopoint | Surandai</title>
+    <title>TN76 Motopoint | Premium Bike Accessories</title>
+    
+    <!-- Tailwind CSS (Design) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Real 3D Viewer Script -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.51/build/spline-viewer.js"></script>
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Animated Background */
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(-45deg, #0f172a, #1e293b, #000000, #1e1b4b);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: white;
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: '#ff5500', dark: '#09090b', card: '#18181b' }
+                }
+            }
         }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    </script>
 
-        /* Glowing Text Animation */
-        .glowing-text {
-            font-weight: 800;
-            background: linear-gradient(to right, #ff7e5f, #feb47b, #ff7e5f);
+    <style>
+        body { background-color: #09090b; color: #ffffff; font-family: 'Segoe UI', system-ui, sans-serif; }
+        /* Glassmorphism Effect */
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #ff5500, #ffaa00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
-            background-size: 200% auto;
         }
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        /* Views */
+        /* Smooth Animations */
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
         .view-section { display: none; }
         .active-view { display: block; }
-        
-        .product-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s;
-        }
-        .product-card:hover { transform: translateY(-5px); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Navbar -->
-    <nav class="p-4 bg-black/50 backdrop-blur sticky top-0 z-50 border-b border-gray-800">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="showView('home-view')">
-                <!-- Replace src with Instagram Logo URL -->
-                <img src="https://ui-avatars.com/api/?name=TN76&background=ff7e5f&color=fff&rounded=true" alt="Logo" class="w-10 h-10 rounded-full border-2 border-orange-500">
-                <span class="text-xl font-bold tracking-wider">TN76 <span class="text-orange-500">Motopoint</span></span>
-            </div>
-            <div>
-                <button onclick="showView('home-view')" class="mr-4 hover:text-orange-500 transition">Shop</button>
-                <button onclick="checkAdminAccess()" class="bg-orange-600 px-4 py-2 rounded-md hover:bg-orange-700 transition"><i class="fas fa-lock mr-2"></i>Admin</button>
+    <!-- Premium Navbar -->
+    <nav class="fixed w-full z-50 glass-panel border-b border-white/10 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-4 cursor-pointer" onclick="switchTab('home-view')">
+                    <!-- Insta Logo -->
+                    <img src="https://ui-avatars.com/api/?name=TN76&background=ff5500&color=fff&rounded=true" alt="Logo" class="w-12 h-12 rounded-full border-2 border-brand shadow-[0_0_15px_rgba(255,85,0,0.5)]">
+                    <span class="text-2xl font-black tracking-widest uppercase">_TN76 <span class="text-brand">Motopoint</span></span>
+                </div>
+                <div class="flex gap-6">
+                    <button onclick="switchTab('home-view')" class="text-gray-300 hover:text-white font-semibold transition">Catalog</button>
+                    <button onclick="checkAdmin()" class="bg-brand hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold shadow-[0_0_10px_rgba(255,85,0,0.4)] transition">
+                        <i class="fas fa-user-shield mr-2"></i>Admin
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-6xl mx-auto w-full p-4">
+    <!-- Main Content Space -->
+    <main class="flex-grow pt-20">
         
-        <!-- HOME VIEW -->
+        <!-- ================= HOME VIEW ================= -->
         <section id="home-view" class="view-section active-view">
-            <!-- Hero -->
-            <div class="text-center py-16">
-                <h1 class="text-4xl md:text-6xl mb-4 glowing-text">Welcome to _TN76 Motopoint</h1>
-                <p class="text-gray-300 text-lg mb-8">Premium Bike Accessories & Modifications in Surandai</p>
-                <div class="w-32 h-1 bg-orange-500 mx-auto rounded"></div>
+            
+            <!-- 3D Hero Section -->
+            <div class="relative h-[80vh] flex items-center justify-center overflow-hidden border-b border-white/5">
+                <!-- 3D Element Background -->
+                <div class="absolute inset-0 z-0 opacity-60 pointer-events-none md:pointer-events-auto">
+                    <!-- Default 3D abstract object. You can replace URL with your own Spline 3D Bike URL later -->
+                    <spline-viewer url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"></spline-viewer>
+                </div>
+                
+                <div class="relative z-10 text-center px-4 fade-in">
+                    <h1 class="text-5xl md:text-7xl font-black mb-4 tracking-tight">Welcome to <br><span class="text-gradient">_TN76 Motopoint</span></h1>
+                    <p class="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">Premium Modifications, Exhausts & Riding Gears in Surandai.</p>
+                    <a href="#products-section" class="inline-block bg-white text-black px-8 py-3 rounded-full font-bold hover:scale-105 transition transform">Explore Collection</a>
+                </div>
             </div>
 
-            <!-- Products Grid -->
-            <div class="mb-8 flex justify-between items-end">
-                <h2 class="text-2xl font-bold border-l-4 border-orange-500 pl-3">Our Products</h2>
-            </div>
-            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16">
-                <!-- Products will load here dynamically -->
+            <!-- Products Section -->
+            <div id="products-section" class="max-w-7xl mx-auto px-4 py-16">
+                <h2 class="text-3xl font-bold mb-10 flex items-center gap-3 fade-in">
+                    <span class="w-2 h-8 bg-brand rounded-full"></span> Featured Accessories
+                </h2>
+                
+                <div id="store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 fade-in" style="animation-delay: 0.2s;">
+                    <!-- Products will be injected here via JS -->
+                </div>
             </div>
 
-            <!-- Shop Location -->
-            <div class="mt-12 bg-black/30 p-6 rounded-xl border border-gray-800">
-                <h2 class="text-2xl font-bold mb-4 text-orange-500"><i class="fas fa-map-marker-alt mr-2"></i>Visit Our Shop</h2>
-                <div class="w-full h-64 rounded-lg overflow-hidden">
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3936.197992981997!2d77.3995!3d9.0068!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMDAnMjQuNSJOIDc3wrAyMyw1OC4yIkU!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin" 
-                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
-                    </iframe>
+        </section>
+
+        <!-- ================= ADMIN LOGIN ================= -->
+        <section id="login-view" class="view-section">
+            <div class="min-h-[80vh] flex items-center justify-center px-4">
+                <div class="glass-panel p-8 rounded-2xl w-full max-w-md fade-in text-center">
+                    <i class="fas fa-lock text-4xl text-brand mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-6">Admin Secured Portal</h2>
+                    
+                    <input type="text" id="username" placeholder="Username" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white focus:outline-none focus:border-brand transition">
+                    
+                    <input type="password" id="password" placeholder="Password" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-6 text-white focus:outline-none focus:border-brand transition">
+                    
+                    <button onclick="login()" class="w-full bg-brand text-white font-bold py-3 rounded-lg hover:bg-orange-600 transition shadow-[0_0_15px_rgba(255,85,0,0.3)]">Login to Dashboard</button>
+                    
+                    <p id="error-msg" class="text-red-500 mt-4 hidden text-sm font-semibold">Incorrect credentials!</p>
                 </div>
             </div>
         </section>
 
-        <!-- ADMIN LOGIN VIEW -->
-        <section id="admin-login-view" class="view-section">
-            <div class="max-w-md mx-auto mt-20 bg-gray-900 p-8 rounded-xl border border-gray-800 shadow-2xl">
-                <h2 class="text-2xl font-bold text-center mb-6">Admin Portal</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-gray-400 mb-1">Username</label>
-                        <input type="text" id="login-username" class="w-full p-3 rounded bg-black border border-gray-700 focus:border-orange-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">Password</label>
-                        <input type="password" id="login-password" class="w-full p-3 rounded bg-black border border-gray-700 focus:border-orange-500 outline-none">
-                    </div>
-                    <button onclick="login()" class="w-full bg-orange-600 p-3 rounded font-bold hover:bg-orange-700 transition mt-4">Login</button>
-                    <p id="login-error" class="text-red-500 text-sm text-center hidden mt-2">Invalid username or password!</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ADMIN DASHBOARD VIEW -->
-        <section id="admin-dashboard-view" class="view-section">
-            <div class="flex justify-between items-center mt-8 mb-8">
-                <h2 class="text-3xl font-bold"><i class="fas fa-cog text-orange-500 mr-2"></i>Dashboard</h2>
-                <button onclick="logout()" class="text-red-400 hover:text-red-500"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Add Product Form -->
-                <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 h-fit">
-                    <h3 class="text-xl font-bold mb-4">Add New Product</h3>
-                    <div class="space-y-4">
-                        <input type="text" id="p-name" placeholder="Product Name (e.g. HJG Fog Light)" class="w-full p-3 rounded bg-black border border-gray-700 text-white">
-                        <input type="number" id="p-price" placeholder="Price (₹)" class="w-full p-3 rounded bg-black border border-gray-700 text-white">
-                        <input type="text" id="p-image" placeholder="Image URL" class="w-full p-3 rounded bg-black border border-gray-700 text-white">
-                        <button onclick="addProduct()" class="w-full bg-green-600 p-3 rounded font-bold hover:bg-green-700">Add Product</button>
-                    </div>
+        <!-- ================= ADMIN DASHBOARD ================= -->
+        <section id="dashboard-view" class="view-section">
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-10 fade-in">
+                    <h2 class="text-3xl font-bold"><span class="text-brand">Admin</span> Dashboard</h2>
+                    <button onclick="logout()" class="text-gray-400 hover:text-white border border-gray-600 px-4 py-2 rounded-lg mt-4 md:mt-0"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
                 </div>
 
-                <!-- Manage Products -->
-                <div class="lg:col-span-2 bg-gray-900 p-6 rounded-xl border border-gray-800">
-                    <h3 class="text-xl font-bold mb-4">Manage Inventory</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="border-b border-gray-700">
-                                    <th class="p-3">Product Name</th>
-                                    <th class="p-3">Price</th>
-                                    <th class="p-3">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-product-list">
-                                <!-- Dynamic List -->
-                            </tbody>
-                        </table>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Add Form -->
+                    <div class="glass-panel p-6 rounded-2xl h-fit fade-in" style="animation-delay: 0.1s;">
+                        <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Add New Item</h3>
+                        <input type="text" id="add-name" placeholder="Product Name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white">
+                        <input type="number" id="add-price" placeholder="Price (₹)" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-4 text-white">
+                        <input type="text" id="add-img" placeholder="Image URL" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 mb-6 text-white">
+                        <button onclick="addNewProduct()" class="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition">Publish Product</button>
+                    </div>
+
+                    <!-- Manage Items -->
+                    <div class="lg:col-span-2 glass-panel p-6 rounded-2xl fade-in" style="animation-delay: 0.2s;">
+                        <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Live Inventory</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="text-gray-400 text-sm uppercase bg-black/30">
+                                    <tr>
+                                        <th class="p-4 rounded-tl-lg">Item Name</th>
+                                        <th class="p-4">Price</th>
+                                        <th class="p-4 text-right rounded-tr-lg">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-table-body" class="divide-y divide-white/5">
+                                    <!-- Rows injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
-    <footer class="text-center p-6 border-t border-gray-800 mt-12 text-gray-500">
-        <p>&copy; 2026 TN76 Motopoint Surandai. All rights reserved.</p>
-    </footer>
-
     <script>
-        // ==========================================
-        // 1. ADMIN CREDENTIALS (CHANGE THESE)
-        // ==========================================
-        const ADMIN_USERNAME = "tn76motopoint";
-        const ADMIN_PASSWORD = "pointshop";
-        const WHATSAPP_NUMBER = "919585023258"; // Shop owner's number with country code
+        // --- 1. CONFIGURATION ---
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "admin123";
+        const WHATSAPP_NO = "919876543210"; // Client's WhatsApp Number
 
-        // ==========================================
-        // 2. STATE MANAGEMENT (LOCAL STORAGE)
-        // ==========================================
-        let products = JSON.parse(localStorage.getItem('tn76_products')) || [
-            { id: 1, name: "HJG Mini Drive Fog Light", price: 1200, image: "https://images.unsplash.com/photo-1557008075-7f2c5efa4cfd?auto=format&fit=crop&q=80&w=400" },
-            { id: 2, name: "Axor Apex Helmet", price: 4999, image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400" }
+        // --- 2. LOCAL STORAGE SETUP ---
+        let db = JSON.parse(localStorage.getItem('tn76_db')) || [
+            { id: 1, name: "Axor Street Helmet - Matte Black", price: 4999, img: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&q=80" },
+            { id: 2, name: "HJG Fog Lights (Pair)", price: 1500, img: "https://images.unsplash.com/photo-1557008075-7f2c5efa4cfd?w=500&q=80" }
         ];
 
-        // ==========================================
-        // 3. UI NAVIGATION
-        // ==========================================
-        function showView(viewId) {
+        // --- 3. NAVIGATION LOGIC ---
+        function switchTab(tabId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
-            document.getElementById(viewId).classList.add('active-view');
-            if(viewId === 'home-view') renderHomeProducts();
-            if(viewId === 'admin-dashboard-view') renderAdminProducts();
+            document.getElementById(tabId).classList.add('active-view');
+            
+            if(tabId === 'home-view') loadStorefront();
+            if(tabId === 'dashboard-view') loadAdminTable();
+            window.scrollTo(0,0);
         }
 
-        // ==========================================
-        // 4. AUTHENTICATION
-        // ==========================================
-        function checkAdminAccess() {
-            if(sessionStorage.getItem('tn76_admin_logged_in') === 'true') {
-                showView('admin-dashboard-view');
-            } else {
-                showView('admin-login-view');
-            }
+        // --- 4. AUTHENTICATION ---
+        function checkAdmin() {
+            if(sessionStorage.getItem('tn76_auth') === 'true') switchTab('dashboard-view');
+            else switchTab('login-view');
         }
 
         function login() {
-            const u = document.getElementById('login-username').value;
-            const p = document.getElementById('login-password').value;
-            
-            if(u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
-                sessionStorage.setItem('tn76_admin_logged_in', 'true');
-                document.getElementById('login-error').classList.add('hidden');
-                document.getElementById('login-username').value = '';
-                document.getElementById('login-password').value = '';
-                showView('admin-dashboard-view');
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if(u === ADMIN_USER && p === ADMIN_PASS) {
+                sessionStorage.setItem('tn76_auth', 'true');
+                document.getElementById('error-msg').classList.add('hidden');
+                switchTab('dashboard-view');
             } else {
-                document.getElementById('login-error').classList.remove('hidden');
+                document.getElementById('error-msg').classList.remove('hidden');
             }
         }
 
         function logout() {
-            sessionStorage.removeItem('tn76_admin_logged_in');
-            showView('home-view');
+            sessionStorage.removeItem('tn76_auth');
+            switchTab('home-view');
         }
 
-        // ==========================================
-        // 5. PRODUCT MANAGEMENT
-        // ==========================================
-        function addProduct() {
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const image = document.getElementById('p-image').value || "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=400";
-
-            if(!name || !price) {
-                alert("Please enter product name and price!");
-                return;
-            }
-
-            const newProduct = {
-                id: Date.now(),
-                name: name,
-                price: parseInt(price),
-                image: image
-            };
-
-            products.push(newProduct);
-            localStorage.setItem('tn76_products', JSON.stringify(products));
-            
-            // Clear inputs
-            document.getElementById('p-name').value = '';
-            document.getElementById('p-price').value = '';
-            document.getElementById('p-image').value = '';
-            
-            renderAdminProducts();
-        }
-
-        function deleteProduct(id) {
-            if(confirm("Are you sure you want to delete this?")) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('tn76_products', JSON.stringify(products));
-                renderAdminProducts();
-            }
-        }
-
-        // ==========================================
-        // 6. RENDERING
-        // ==========================================
-        function renderHomeProducts() {
-            const grid = document.getElementById('product-grid');
+        // --- 5. RENDER STOREFRONT (HOME) ---
+        function loadStorefront() {
+            const grid = document.getElementById('store-grid');
             grid.innerHTML = '';
             
-            if(products.length === 0) {
-                grid.innerHTML = '<p class="text-gray-400">Products updating soon...</p>';
+            if(db.length === 0) {
+                grid.innerHTML = '<p class="text-gray-500 italic col-span-full">No products available right now.</p>';
                 return;
             }
 
-            products.forEach(p => {
-                const msg = encodeURIComponent(`Hi TN76 Motopoint, I want to enquire about ${p.name} (Price: ₹${p.price})`);
-                const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
-
+            db.forEach(item => {
+                const msg = encodeURIComponent(`Hi TN76, I want to buy: ${item.name} (₹${item.price})`);
+                const waLink = `https://wa.me/${WHATSAPP_NO}?text=${msg}`;
+                
                 grid.innerHTML += `
-                    <div class="product-card rounded-xl overflow-hidden shadow-lg flex flex-col">
-                        <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover">
-                        <div class="p-5 flex-grow flex flex-col justify-between">
-                            <div>
-                                <h3 class="font-bold text-xl mb-2">${p.name}</h3>
-                                <p class="text-orange-400 font-bold text-lg mb-4">₹${p.price}</p>
-                            </div>
-                            <a href="${waLink}" target="_blank" class="block w-full bg-green-600 hover:bg-green-700 text-center py-2 rounded-lg font-semibold transition">
-                                <i class="fab fa-whatsapp mr-2"></i>Enquire
+                    <div class="glass-panel rounded-xl overflow-hidden group hover:border-brand transition duration-300">
+                        <div class="h-56 overflow-hidden relative">
+                            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold mb-1 truncate">${item.name}</h3>
+                            <p class="text-brand font-black text-xl mb-4">₹${item.price}</p>
+                            <a href="${waLink}" target="_blank" class="block w-full text-center bg-white text-black font-bold py-2 rounded hover:bg-gray-200 transition">
+                                <i class="fab fa-whatsapp mr-2 text-green-500"></i> Order Now
                             </a>
                         </div>
                     </div>
@@ -291,24 +237,56 @@
             });
         }
 
-        function renderAdminProducts() {
-            const list = document.getElementById('admin-product-list');
-            list.innerHTML = '';
-            products.forEach(p => {
-                list.innerHTML += `
-                    <tr class="border-b border-gray-800 hover:bg-gray-800/50">
-                        <td class="p-3">${p.name}</td>
-                        <td class="p-3 text-orange-400">₹${p.price}</td>
-                        <td class="p-3">
-                            <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+        // --- 6. RENDER ADMIN TABLE ---
+        function loadAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+            db.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="p-4 flex items-center gap-3">
+                            <img src="${item.img}" class="w-10 h-10 rounded object-cover">
+                            <span class="font-medium">${item.name}</span>
+                        </td>
+                        <td class="p-4 text-brand font-bold">₹${item.price}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteItem(${item.id})" class="text-red-500 hover:text-red-400 bg-red-500/10 p-2 rounded transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
             });
         }
 
+        // --- 7. ADD / DELETE PRODUCTS ---
+        function addNewProduct() {
+            const n = document.getElementById('add-name').value;
+            const p = document.getElementById('add-price').value;
+            const i = document.getElementById('add-img').value || "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&q=80";
+
+            if(!n || !p) return alert("Name and Price are required!");
+
+            db.push({ id: Date.now(), name: n, price: p, img: i });
+            localStorage.setItem('tn76_db', JSON.stringify(db));
+            
+            document.getElementById('add-name').value = '';
+            document.getElementById('add-price').value = '';
+            document.getElementById('add-img').value = '';
+            
+            loadAdminTable();
+        }
+
+        function deleteItem(id) {
+            if(confirm("Delete this item?")) {
+                db = db.filter(item => item.id !== id);
+                localStorage.setItem('tn76_db', JSON.stringify(db));
+                loadAdminTable();
+            }
+        }
+
         // Initialize App
-        renderHomeProducts();
+        loadStorefront();
     </script>
 </body>
 </html>
